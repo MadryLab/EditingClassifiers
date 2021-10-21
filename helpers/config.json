@@ -1,0 +1,22 @@
+{
+ "dataset_name": "ImageNet",
+ "concept_dir": "./data/synthetic/segmentations",
+ "concepts": "COCO",
+ "concept_name": "road",
+ "style": "colorful_flowers",
+ "style_dir": "./data/synthetic/stylized",
+ "arch": "vgg16",
+ "layernum": 12,
+ "mode_rewrite": "editing",
+ "nconcept": 3,
+ "ntrain": 3,
+ "nsteps": 40000,
+ "nsteps_proj": 10,
+ "use_mask": true,
+ "restrict_rank": true, 
+ "rank": 1, 
+ "lr": 1e-5,
+ "num_workers": 4,
+ "batch_size": 50,
+ "cache_dir": "./cache"
+}
