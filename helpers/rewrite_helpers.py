@@ -5,7 +5,7 @@ from torchvision.transforms import ToPILImage
 from tqdm import tqdm
 import numpy as np
 import helpers.context_helpers as coh
-from tools import renormalize
+from tools import renormalize, nethook
 
 
 def downscale_mask(mask, tgt_size, threshold=None):
