@@ -1,7 +1,4 @@
-# Creating BREEDS Sub-population shift Benchmarks
-
 This repository contains the code and data for our paper:
-
 
 **Editing a classifier by rewriting its prediction rules** <br>
 *Shibani Santurkar\*, Dimitris Tsipras\*, Mahi Elango\*, David Bau\*, Antonio Torralba\*, Aleksander Madry* <br>

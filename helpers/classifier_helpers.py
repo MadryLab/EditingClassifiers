@@ -1,12 +1,17 @@
 import sys, os, dill, torch, numpy, itertools
+sys.path.append('./CLIP')
 import torch as ch
 import torch.nn as nn
+from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor, Normalize
+from PIL.Image import BICUBIC
 from collections import OrderedDict
 from robustness.model_utils import make_and_restore_model
 from robustness.tools.label_maps import CLASS_DICT
+from clip.clip import _download, _MODELS, _convert_image_to_rgb
 import helpers.context_helpers as coh
 from models.custom_vgg import vgg16_bn, vgg16
 from models.custom_resnet import resnet18, resnet50
+from models.custom_clip import build_model
 from tools.places365_names import class_dict
 
 def get_default_paths(dataset_name, arch='vgg16'):
@@ -57,12 +62,18 @@ def eval_accuracy(model, loader, alt=False, normalize=None):
     return ch.cat(preds), ch.cat(labels)
 
 def load_clip(arch='clip_RN50'):
-    from clip.clip import _download, _MODELS, _transform_unnorm
-    from clip.model_editing import build_model
+    
+    def _transform_unnorm(n_px):
+        return Compose([
+            Resize(n_px, interpolation=BICUBIC),
+            CenterCrop(n_px),
+            _convert_image_to_rgb,
+            ToTensor()
+        ])
     
     arch = arch.split('_')[1]
     
-    model_path = _download(_MODELS[arch])
+    model_path = _download(_MODELS[arch], './cache')
     model = torch.jit.load(model_path, map_location="cpu").eval()    
     model = build_model(model.state_dict()).cuda()
     
