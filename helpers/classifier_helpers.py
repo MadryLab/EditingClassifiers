@@ -1,12 +1,46 @@
-import sys, os
-import torch
+import sys, os, dill, torch, numpy, itertools
 import torch as ch
-import numpy
-import itertools
 import torch.nn as nn
 from collections import OrderedDict
 from robustness.model_utils import make_and_restore_model
-import dill
+from robustness.tools.label_maps import CLASS_DICT
+import helpers.context_helpers as coh
+from models.custom_vgg import vgg16_bn, vgg16
+from models.custom_resnet import resnet18, resnet50
+from tools.places365_names import class_dict
+
+def get_default_paths(dataset_name, arch='vgg16'):
+    if dataset_name == 'ImageNet':
+        data_path = '/mnt/nfs/datasets/imagenet-pytorch'
+        label_map = CLASS_DICT['ImageNet']
+        
+        if arch.startswith('clip'):
+            model_path = None
+            model_class = None
+            arch = arch
+        elif arch == 'resnet50':
+            base_path = '/data/theory/robustopt/robust_models/transfer_models/'
+            model_path = os.path.join(base_path, f'resnet50_l2_eps0.ckpt')
+            model_class, arch = resnet50(), 'resnet50'
+        else:
+            base_path = '/data/theory/robustopt/hadi_shared_results/imagenet_experiments/vary_arch'
+            model_path = os.path.join(base_path, f'vgg16_bn_batch256_3steps_eps0', 
+                                        'checkpoint.pt.best')
+            model_class, arch = vgg16_bn(), 'vgg16_bn'
+        
+    else:
+        data_path = '/mnt/nfs/datasets/places2/places365_standard'
+        label_map = class_dict
+        
+        if arch.startswith('vgg16'):
+            model_path = '/data/theory/robustopt/trained_models/vgg16_places365.pt'
+            model_class, arch = vgg16(num_classes=365), 'vgg16'
+        elif arch == 'resnet18':
+            model_path = '/data/theory/robustopt/trained_models/resnet18_places365.pt'
+            model_class, arch = resnet18(num_classes=365), 'resnet18'
+        
+        
+    return data_path, model_path, model_class, arch, label_map
 
 def eval_accuracy(model, loader, alt=False, normalize=None):
     labels, preds = [], []
@@ -172,7 +206,7 @@ def load_classifier(model_path, model_class, arch, dataset, layernum):
         mod, preprocess = mod
     mod = mod.cuda()
     
-    con_mod, Nfeatures = get_context_model(mod, layernum, arch)
+    con_mod, Nfeatures = coh.get_context_model(mod, layernum, arch)
     if arch.startswith('vgg'):
         targ_mod = mod[layernum + 1]
     elif arch.startswith('clip'):

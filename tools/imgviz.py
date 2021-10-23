@@ -1,8 +1,7 @@
 import PIL
 import torch
 import sys
-sys.path.append('../')
-from utils import upsample, renormalize, tally
+from tools import upsample, renormalize, tally
 from matplotlib import cm
 
 
