@@ -169,8 +169,6 @@ def get_context_key(source_imgs,
                 k_acts.permute(0, 2, 3, 1).reshape(-1, k_acts.shape[1]),
                 area.view(-1)[:, None].to(k_acts.device)))
         
-        print(accumulated_obs[0][0].shape)
-
         all_obs = torch.cat([obs[(w > 0).nonzero()[:, 0], :]
                              for obs, w in accumulated_obs])
         all_weight = torch.cat([w[w > 0]
