@@ -40,7 +40,7 @@ repository](https://github.com/davidbau/rewriting) of Bau et al.
 
 6. (If using synthetic examples) Run 
 ```
-     python stylize.py --style_name [STYLE_FILE_NAME]
+     python stylize.py -style_name [STYLE_FILE_NAME]
 ```
 with the desired style file from `./data/synthetic/styles`. You could also use a custom style file if desired.
 
